@@ -1,20 +1,18 @@
-const todoStorage = [];
+let todoStorage = [];
 
-function addTodo(title, desc, dueDate, priority, notes, checklist) {
+function addTodo(title, desc, dueDate, priority) {
     const newEntry = {
         title: title,
         desc: desc,
         dueDate: dueDate,
         priority: priority,
-        notes: notes,
-        checklist: checklist,
         isDone: false
     };
     todoStorage.push(newEntry);
     syncData();
 }
 
-function syncData() {x
+function syncData() {
     if (!todoStorage.length) {
         todoStorage = JSON.parse(window.localStorage.getItem("todoLocal"));
         return
@@ -23,5 +21,13 @@ function syncData() {x
     window.localStorage.setItem("todoLocal", JSON.stringify(todoStorage));
 }
 
-export {addTodo}
+function setPriority(index) {
+    if (todoStorage[index].priority === false) {
+        todoStorage[index].priority = true;
+    } else {
+        todoStorage[index].priority = false;
+    }
+}
+
+export {addTodo, todoStorage, syncData, setPriority}
 
