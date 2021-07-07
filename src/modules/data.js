@@ -1,18 +1,26 @@
-let todoStorage = [];
+import {renderAllTodos} from "../modules/dom";
 
-function addTodo(title, desc, dueDate, priority) {
-    const newEntry = {
-        title: title,
-        desc: desc,
-        dueDate: dueDate,
-        priority: priority,
-        isDone: false
-    };
+let todoStorage = [];
+const todoProjects = ["Default"];
+
+const Todo = function(title, desc, dueDate, project, priority) {
+    this.title = title;
+    this.desc = desc;
+    this.dueDate = dueDate;
+    this.project = project;
+    this.priority = priority; 
+    this.isDone = false;
+}
+
+function addTodo(title, desc, dueDate, project, priority) {
+    const newEntry = new Todo(title, desc, dueDate, project, priority);
     todoStorage.push(newEntry);
-    syncData();
+    renderAllTodos();
 }
 
 function syncData() {
+    if (!todoStorage.length && !window.localStorage.length) return
+
     if (!todoStorage.length) {
         todoStorage = JSON.parse(window.localStorage.getItem("todoLocal"));
         return
@@ -29,5 +37,5 @@ function setPriority(index) {
     }
 }
 
-export {addTodo, todoStorage, syncData, setPriority}
+export {addTodo, todoStorage, todoProjects, syncData, setPriority}
 

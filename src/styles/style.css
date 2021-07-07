@@ -28,6 +28,7 @@ body {
 }
 
 header {
+    order: 1;
     min-height: 5%;
     background-color: var(--secondary);
     display: flex;
@@ -43,12 +44,14 @@ header {
 }
 
 main {
+    order: 2;
     background-color: var(--primary);
     flex: 1;
     overflow: auto;
 }
 
 nav {
+    order: 3;
     display: flex;
     background-color: var(--secondary);
     width: 100%;
@@ -82,6 +85,7 @@ nav div {
 }
 
 .mobile-nav {
+    order: 5;
     min-height: 6%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -163,9 +167,127 @@ nav div {
 .todo-title {
     flex-grow: 2;
     text-align: left;
+    width: calc(100% - 10rem);
+    word-wrap: break-word;
 }
 
 .todo-date {
     flex-grow: 1;
+    text-align: right;
+}
+
+.todo-desc {
+    width: calc(100% - 8rem);
+    word-wrap: break-word;
+}
+
+.form-wrapper {
+    order: 4;
+    overflow: hidden;
+    transition: all 0.2s ease-in;
+    font-family: 'Lato', sans-serif;
+    color: var(--senary);
+    background-color: var(--secondary);
+}
+
+form {
+    margin-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+form > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+input[type=text], input[type=date], select {
+    padding: 0.3rem;
+    border: 0.15rem transparent solid;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+input[type=text] {
+    width: 90%;
+}
+
+select {
+    background-color: #FFFFFF;
+}
+
+.form-radios * {
+    margin: 0.3rem;
+}
+
+.form-buttons {
+    display: flex;
+    flex-direction: row;
+}
+
+.form-buttons * {
+    margin: 0 0.2rem;
+    border: 0;
+    border-radius: 1rem;
+    padding: 0.3rem 2rem;
+}
+
+.form-wrapper-closed {
+    visibility: hidden;
+    max-height: 0;
+}
+
+.form-wrapper-open {
+    visibility: visible;
+    max-height: 100%;
+}
+
+/* .confirm-delete {
+    top: 0; 
+    bottom: 0;
+    left: 0; 
+    right: 0;
+    margin: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    background-color: var(--tertiary);
+    font-size: 1.3rem;
+    border-radius: 1rem;
+    width: 20rem;
+    padding: 0.5rem;
+    font-family: 'Lato', sans-serif;
+}
+
+.confirm-delete-text {
     text-align: center;
 }
+
+.confirm-delete-text * {
+    margin-bottom: 0.6rem;
+}
+
+.confirm-delete-text div:nth-child(2) {
+    max-width: 20rem;
+    font-size: 1rem;
+    font-style: italic;
+    word-wrap: break-word;
+}
+
+.confirm-delete-buttons {
+    margin: 0.5rem;
+}
+
+.confirm-delete-buttons button {
+    margin: 0 0.5rem;
+    border: 0;
+    border-radius: 1rem;
+    padding: 0.3rem 2rem;
+    font-family: 'Titillium Web', sans-serif;
+    font-size: 1.1rem;
+} */
