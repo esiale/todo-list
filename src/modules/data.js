@@ -1,7 +1,7 @@
 import {renderAllTodos} from "../modules/dom";
 
 let todoStorage = [];
-const todoProjects = ["Default"];
+let todoProjects = [];
 
 const Todo = function(title, desc, dueDate, project, priority) {
     this.title = title;
@@ -16,17 +16,28 @@ function addTodo(title, desc, dueDate, project, priority) {
     const newEntry = new Todo(title, desc, dueDate, project, priority);
     todoStorage.push(newEntry);
     renderAllTodos();
-    syncData();
+    syncData("todo");
 }
 
-function syncData() {
-    if (!todoStorage.length && !window.localStorage.length) return
+function syncData(data) {
+    if (data === "todo") {
+        if (!todoStorage.length && localStorage.getItem("todoLocal") === null) return
 
-    if (!todoStorage.length) {
-        todoStorage = JSON.parse(window.localStorage.getItem("todoLocal"));
+        if (!Array.isArray(todoStorage) || !todoStorage.length) {
+            todoStorage = JSON.parse(window.localStorage.getItem("todoLocal"));
+        } else {
+            window.localStorage.setItem("todoLocal", JSON.stringify(todoStorage));
+        }
     }
-    window.localStorage.clear();
-    window.localStorage.setItem("todoLocal", JSON.stringify(todoStorage));
+    if (data === "projects") {
+        if (!todoProjects.length && localStorage.getItem("projectsLocal") === null) return
+
+        if (!Array.isArray(todoProjects) || !todoProjects.length) {
+            todoProjects = JSON.parse(window.localStorage.getItem("projectsLocal"));
+        } else {
+            window.localStorage.setItem("projectsLocal", JSON.stringify(todoProjects));
+        }
+    }
 }
 
 function setPriority(index) {
@@ -35,22 +46,31 @@ function setPriority(index) {
     } else {
         todoStorage[index].priority = false;
     } console.log(todoStorage[index].priority);
-    syncData();
+    syncData("todo");
 }
 
 function deleteTodo(index) {
     todoStorage.splice(index, 1);
     renderAllTodos();
-    syncData();
+    syncData("todo");
 }
 
 function editTodo(title, desc, dueDate, project, priority, index) {
     const editedTodo = new Todo(title, desc, dueDate, project, priority);
     todoStorage.splice(index, 1, editedTodo);
     renderAllTodos();
-    syncData();
+    syncData("todo");
+}
+
+function addProject(project) {
+    if (todoProjects.includes(project) || (!/\S/.test(project))) {
+        return "error"
+    } else {
+        todoProjects.push(project);
+        syncData("projects");
+    }
 }
 
 
-export {addTodo, deleteTodo, editTodo, todoStorage, todoProjects, syncData, setPriority}
+export {addTodo, deleteTodo, editTodo, todoStorage, todoProjects, syncData, setPriority, addProject}
 

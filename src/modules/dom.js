@@ -1,4 +1,4 @@
-import {todoStorage, todoProjects, setPriority, addTodo, deleteTodo, editTodo, syncData} from "../modules/data"
+import {todoStorage, todoProjects, setPriority, addTodo, deleteTodo, editTodo, syncData, addProject} from "../modules/data"
 
 function renderLayout() {
     const wrapper = document.createElement("div");
@@ -21,8 +21,15 @@ function renderLayout() {
         const week = document.createElement("div");
         week.textContent = "Week";
         const projects = document.createElement("div");
-        projects.textContent = "Projects";  
-    nav.append(inbox, today, week, projects);
+
+        projects.textContent = "Projects";
+        projects.className = "nav-projects";
+        projects.addEventListener("click", showProjectsTab);
+
+        const projectsTab = document.createElement("div");
+        projectsTab.className = "nav-projects-tab";
+        
+    nav.append(inbox, today, week, projects, projectsTab);
 
     const mobileNav = document.createElement("div");
     mobileNav.className = "mobile-nav";
@@ -46,13 +53,18 @@ function renderLayout() {
     mobileNav.append(addButton, hamburgerButton);
     wrapper.append(header, main, nav, mobileNav);
     document.querySelector("#content").append(wrapper);
+
+    renderProjectsTab();
 }
 
 function showNav() {
     const nav = document.querySelector("nav");
     const formWrapper = document.querySelector(".form-wrapper");
     
-    if (formWrapper.classList.contains("form-wrapper-open")) return
+    if (formWrapper.classList.contains("form-wrapper-open")) {
+        formWrapper.classList.remove("form-wrapper-open");
+        formWrapper.classList.add("form-wrapper-closed");
+    }
 
     if (nav.classList.contains("nav-closed")) {
         nav.className = "nav-open";
@@ -206,12 +218,12 @@ function renderForm() {
 
     const projectInput = document.createElement("select");
     projectInput.setAttribute("id", "todo-project")
-    todoProjects.forEach(project => {
-        const newOption = document.createElement("option");
-        newOption.setAttribute("value", project);
-        newOption.textContent = project;
-        projectInput.append(newOption);
-    })
+    // todoProjects.forEach(project => {
+    //     const newOption = document.createElement("option");
+    //     newOption.setAttribute("value", project);
+    //     newOption.textContent = project;
+    //     projectInput.append(newOption);
+    // })
 
     const priorityWrapper = document.createElement("div");
     priorityWrapper.className = "form-priority-wrapper";
@@ -277,22 +289,22 @@ function submitForm(e) {
     const priority = document.querySelector("input[name='todo-priority']:checked");
     const submitButton = document.getElementById("submit-button");
     
-    if (title.value === "") {
+    if (!/\S/.test(title.value)) {
         title.style.border = "0.15rem var(--red) solid";
     } else {
         title.style.border = "";
     }
-    if (desc.value === "") {
+    if (!/\S/.test(desc.value)) {
         desc.style.border = "0.15rem var(--red) solid";
     } else {
         desc.style.border = "";
     }
-    if (date.value === "") {
+    if (!/\S/.test(date.value)) {
         date.style.border = "0.15rem var(--red) solid";
     } else {
         date.style.border = "";
     }
-    if (date.value === "" || desc.value === "" || date.value === "") {
+    if (!/\S/.test(title.value) || !/\S/.test(desc.value) || !/\S/.test(date.value)) {
         return
     } else {
         if (submitButton.value === "Done") {
@@ -316,8 +328,13 @@ function showForm(action, caller) {
     const priority = document.querySelectorAll("input[name='todo-priority']");
     const submitButton = document.getElementById("submit-button");
     const addButton = document.querySelector(".add-button");
+    const nav = document.querySelector("nav");
 
     if (formWrapper.classList.contains("form-wrapper-open") && this === addButton && submitButton.value === "Edit") return
+    if (nav.classList.contains("nav-open")) {
+        nav.classList.remove("nav-open");
+        nav.classList.add("nav-closed");
+    }
 
     if (action === "editTodo") {
         const thisIndex = caller.parentNode.parentNode.parentNode.dataset.index;
@@ -332,7 +349,6 @@ function showForm(action, caller) {
             priority[0].checked = false;
             priority[1].checked = true;
         }
-        console.log(todoStorage[thisIndex].priority)
 
         submitButton.value = "Edit";
         submitButton.dataset.editIndex = thisIndex;
@@ -369,7 +385,9 @@ function confirmDelete(e) {
     thisDesc.textContent = "Press again the delete button to confirm!";
     this.setAttribute("confirm-delete", true);
 
-    setTimeout(()  => {
+    let clearDeleteTimer = setTimeout(()  => {
+    if (thisDesc === undefined) return clearTimeout(clearDeleteTimer)
+
     thisDesc.classList.remove("todo-confirm-delete");
     thisDesc.textContent = todoStorage[thisIndex].desc;
     this.removeAttribute("confirm-delete");
@@ -381,4 +399,100 @@ function showEdit(e) {
     showForm("editTodo", caller);
 }
 
-export {renderLayout, renderAllTodos, renderForm}
+function renderProjectsTab() {
+    const projectsTab = document.querySelector(".nav-projects-tab");
+    const nav = document.querySelector("nav");
+    
+    const newProjectPanel = document.createElement("div");
+    newProjectPanel.className = "nav-projects-new";
+    const newProjectInput = document.createElement("input");
+    newProjectInput.setAttribute("type", "text");
+    newProjectInput.setAttribute("name", "new-project-name");
+    newProjectInput.setAttribute("id", "new-project-name");
+    newProjectInput.placeholder = "Choose name for a new project"
+
+    const newProjectButtons = document.createElement("div");
+
+    const newProjectButton = document.createElement("button");
+    newProjectButton.setAttribute("id", "new-project-button");
+    newProjectButton.textContent = "Add new project";
+    newProjectButton.addEventListener("click", handleNewProject);
+
+    const deleteProjectButton = document.createElement("button");
+    deleteProjectButton.textContent = "Delete project";
+    deleteProjectButton.addEventListener("click", handleDeleteProject);
+
+    newProjectButtons.append(newProjectButton, deleteProjectButton);
+    newProjectPanel.append(newProjectInput, newProjectButtons);
+
+    const selectProject = document.createElement("select");
+    selectProject.setAttribute("id", "nav-projects-tab-select")
+
+    // const noProject = document.createElement("option");
+    // noProject.value = "test";
+    // noProject.textContent = "No project selected";
+
+    // selectProject.append(noProject);
+    // todoProjects.forEach(project => {
+    //     const newOption = document.createElement("option");
+    //     newOption.setAttribute("value", project);
+    //     newOption.textContent = project;
+    //     selectProject.append(newOption);
+    // })
+    projectsTab.append(selectProject, newProjectPanel);
+    nav.append(projectsTab);
+}
+
+function showProjectsTab() {
+    const projectsTab = document.querySelector(".nav-projects-tab")
+    if (projectsTab.classList.contains("nav-projects-tab-open")) {
+        projectsTab.classList.remove("nav-projects-tab-open");
+    } else {
+        projectsTab.classList.add("nav-projects-tab-open");
+    }
+}
+
+function renderProjectOptions() {
+    const allSelects = document.querySelectorAll("select");
+    allSelects.forEach(item => {
+        const allOptions = item.querySelectorAll("option");
+        for (let i = 0; i < allOptions.length; i++) {
+            item.removeChild(allOptions[i])
+        }
+    });
+    allSelects.forEach(item => {
+        const noProject = document.createElement("option");
+        noProject.setAttribute("value", "none");
+        noProject.textContent = "No project selected";    
+        item.append(noProject);
+        todoProjects.forEach(project => {
+            const newOption = document.createElement("option");
+            newOption.setAttribute("value", project);
+            newOption.textContent = project;
+            item.append(newOption);
+        })
+    })
+}
+
+function handleNewProject(e) {
+    const newProjectName = document.getElementById("new-project-name");
+    const newProjectButton = document.getElementById("new-project-button");
+    if (addProject(newProjectName.value) === "error") {
+        newProjectName.value = "This project already exists or input is empty!"
+    } else {
+        newProjectName.value = "Project added!"
+        renderProjectOptions();
+    }
+    newProjectButton.removeEventListener("click", handleNewProject);
+    setTimeout(() => {
+        newProjectName.value = "";
+        newProjectButton.addEventListener("click", handleNewProject);
+    }, 3000);
+}
+
+
+function handleDeleteProject() {
+
+}
+
+export {renderLayout, renderAllTodos, renderForm, renderProjectOptions}
