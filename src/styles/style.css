@@ -135,7 +135,7 @@ nav div {
     visibility: visible;
 }
 
-.todo-secondary p {
+.todo-desc {
     margin: 0.3rem;
     font-size: 0.9rem;
     font-style: italic;
@@ -179,6 +179,11 @@ nav div {
 .todo-desc {
     width: calc(100% - 8rem);
     word-wrap: break-word;
+}
+
+.todo-confirm-delete {
+    font-size: 1.1rem;
+    color: var(--red);
 }
 
 .form-wrapper {
@@ -243,51 +248,3 @@ select {
     visibility: visible;
     max-height: 100%;
 }
-
-/* .confirm-delete {
-    top: 0; 
-    bottom: 0;
-    left: 0; 
-    right: 0;
-    margin: auto;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    position: absolute;
-    background-color: var(--tertiary);
-    font-size: 1.3rem;
-    border-radius: 1rem;
-    width: 20rem;
-    padding: 0.5rem;
-    font-family: 'Lato', sans-serif;
-}
-
-.confirm-delete-text {
-    text-align: center;
-}
-
-.confirm-delete-text * {
-    margin-bottom: 0.6rem;
-}
-
-.confirm-delete-text div:nth-child(2) {
-    max-width: 20rem;
-    font-size: 1rem;
-    font-style: italic;
-    word-wrap: break-word;
-}
-
-.confirm-delete-buttons {
-    margin: 0.5rem;
-}
-
-.confirm-delete-buttons button {
-    margin: 0 0.5rem;
-    border: 0;
-    border-radius: 1rem;
-    padding: 0.3rem 2rem;
-    font-family: 'Titillium Web', sans-serif;
-    font-size: 1.1rem;
-} */

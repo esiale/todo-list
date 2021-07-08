@@ -1,4 +1,4 @@
-import {todoStorage, todoProjects, setPriority, addTodo, syncData} from "../modules/data"
+import {todoStorage, todoProjects, setPriority, addTodo, deleteTodo, editTodo, syncData} from "../modules/data"
 
 function renderLayout() {
     const wrapper = document.createElement("div");
@@ -50,6 +50,9 @@ function renderLayout() {
 
 function showNav() {
     const nav = document.querySelector("nav");
+    const formWrapper = document.querySelector(".form-wrapper");
+    
+    if (formWrapper.classList.contains("form-wrapper-open")) return
 
     if (nav.classList.contains("nav-closed")) {
         nav.className = "nav-open";
@@ -95,6 +98,7 @@ function renderTodo(title, desc, dueDate, index) {
     const deleteIcon = document.createElement("span");
     deleteIcon.className = "material-icons delete-icon";
     deleteIcon.textContent = "delete";
+    deleteIcon.addEventListener("click", confirmDelete)
 
     const expandMoreIcon = document.createElement("span");
     expandMoreIcon.className = "material-icons";
@@ -108,11 +112,15 @@ function renderTodo(title, desc, dueDate, index) {
     const editIcon = document.createElement("span");
     editIcon.className = "material-icons-outlined";
     editIcon.textContent = "edit_note";
+    editIcon.addEventListener("click", showEdit);
 
     const priorityIcon = document.createElement("span");
     priorityIcon.className = "material-icons-outlined"
     priorityIcon.textContent = "priority_high";
     priorityIcon.addEventListener("click", activatePriority);
+    if (todoStorage[index].priority === true) {
+        priorityIcon.classList.add("priority-icon-activated");
+    }
 
     const todoSecondary = document.createElement("div");
     todoSecondary.className = "todo-secondary";
@@ -237,11 +245,13 @@ function renderForm() {
     const formButtons = document.createElement("div");
     formButtons.className = "form-buttons";
     const submitButton = document.createElement("input");
+    submitButton.setAttribute("id", "submit-button");
     submitButton.setAttribute("type", "submit");
     submitButton.setAttribute("value", "Done")
     submitButton.addEventListener("click", submitForm);
 
     const cancelButton = document.createElement("input");
+    cancelButton.setAttribute("id", "cancel-button")
     cancelButton.setAttribute("type", "button");
     cancelButton.setAttribute("value", "Cancel")
     cancelButton.addEventListener("click", showForm);
@@ -265,6 +275,7 @@ function submitForm(e) {
     const date = document.getElementById("todo-date");
     const project = document.getElementById("todo-project");
     const priority = document.querySelector("input[name='todo-priority']:checked");
+    const submitButton = document.getElementById("submit-button");
     
     if (title.value === "") {
         title.style.border = "0.15rem var(--red) solid";
@@ -284,13 +295,58 @@ function submitForm(e) {
     if (date.value === "" || desc.value === "" || date.value === "") {
         return
     } else {
-        addTodo(title.value, desc.value, date.value, project.value, priority.value);
+        if (submitButton.value === "Done") {
+        addTodo(title.value, desc.value, date.value, project.value, JSON.parse(priority.value));
         showForm();
+        } else if (submitButton.value === "Edit") {
+            editTodo(title.value, desc.value, date.value, project.value, JSON.parse(priority.value), submitButton.dataset.editIndex);
+            submitButton.value = "Done";
+            delete submitButton.dataset.editIndex;
+            showForm();
+        }
     }
 }
 
-function showForm() {
+function showForm(action, caller) {
     const formWrapper = document.querySelector(".form-wrapper");
+    const title = document.getElementById("todo-title");
+    const desc =  document.getElementById("todo-desc");
+    const date = document.getElementById("todo-date");
+    const project = document.getElementById("todo-project");
+    const priority = document.querySelectorAll("input[name='todo-priority']");
+    const submitButton = document.getElementById("submit-button");
+    const addButton = document.querySelector(".add-button");
+
+    if (formWrapper.classList.contains("form-wrapper-open") && this === addButton && submitButton.value === "Edit") return
+
+    if (action === "editTodo") {
+        const thisIndex = caller.parentNode.parentNode.parentNode.dataset.index;
+        title.value = todoStorage[thisIndex].title;
+        desc.value = todoStorage[thisIndex].desc;
+        date.value = todoStorage[thisIndex].dueDate;
+        project.value = todoStorage[thisIndex].project;
+        if (todoStorage[thisIndex].priority === true) {
+            priority[0].checked = true;
+            priority[1].checked = false;
+        } else {
+            priority[0].checked = false;
+            priority[1].checked = true;
+        }
+        console.log(todoStorage[thisIndex].priority)
+
+        submitButton.value = "Edit";
+        submitButton.dataset.editIndex = thisIndex;
+    } else {
+        title.value = "";
+        desc.value = "";
+        date.value = "";
+        project.value = "Default";
+        priority.value = true;
+        submitButton.value = "Done";
+        priority[0].checked = false;
+        priority[1].checked = true
+    }
+    
     if (formWrapper.classList.contains("form-wrapper-closed")) {
         formWrapper.classList.remove("form-wrapper-closed");
         formWrapper.classList.add("form-wrapper-open");
@@ -300,34 +356,29 @@ function showForm() {
     }
 }
 
-// function confirmDelete() {
-//     const thisIndex = this.parentNode.parentNode.parentNode.dataset.index;
+function confirmDelete(e) {
+    const thisIndex = this.parentNode.parentNode.parentNode.dataset.index;
 
-//     const confirmDelete = document.createElement("div");
-//     confirmDelete.className = "confirm-delete";
+    if (this.hasAttribute("confirm-delete")) {
+        deleteTodo(thisIndex);
+        return
+    }
+    const thisDesc = this.parentNode.parentNode.querySelector(".todo-desc");
 
-//     const confirmDeleteText = document.createElement("div");
-//     confirmDeleteText.className = "confirm-delete-text";
+    thisDesc.classList.add("todo-confirm-delete");
+    thisDesc.textContent = "Press again the delete button to confirm!";
+    this.setAttribute("confirm-delete", true);
 
-//     const confirmDeleteButtons = document.createElement("div");
-//     confirmDeleteButtons.className = "confirm-delete-buttons";
+    setTimeout(()  => {
+    thisDesc.classList.remove("todo-confirm-delete");
+    thisDesc.textContent = todoStorage[thisIndex].desc;
+    this.removeAttribute("confirm-delete");
+    }, 4000)
+}
 
-//     const deleteMessage = document.createElement("div");
-//     deleteMessage.textContent = "Confirm if you want to delete:"
-//     const todoTitle = document.createElement("div");
-//     todoTitle.textContent = todoStorage[thisIndex].title;
-
-//     const yesButton = document.createElement("button");
-//     yesButton.textContent = "Yes";
-//     const noButton = document.createElement("button");
-//     noButton.textContent = "No";
-
-//     confirmDeleteText.append(deleteMessage, todoTitle);
-//     confirmDeleteButtons.append(yesButton, noButton);
-
-//     confirmDelete.append(confirmDeleteText, confirmDeleteButtons);
-//     overlay.append(confirmDelete);
-//     body.append(overlay);
-// }
+function showEdit(e) {
+    const caller = this;
+    showForm("editTodo", caller);
+}
 
 export {renderLayout, renderAllTodos, renderForm}
