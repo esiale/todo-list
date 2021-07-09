@@ -1,4 +1,7 @@
-import {todoStorage, todoProjects, setPriority, addTodo, deleteTodo, editTodo, syncData, addProject} from "../modules/data"
+import {todoStorage, todoProjects, setPriority, 
+addTodo, deleteTodo, editTodo, syncData, addProject,
+deleteProject
+} from "../modules/data"
 
 function renderLayout() {
     const wrapper = document.createElement("div");
@@ -419,6 +422,7 @@ function renderProjectsTab() {
     newProjectButton.addEventListener("click", handleNewProject);
 
     const deleteProjectButton = document.createElement("button");
+    deleteProjectButton.setAttribute("id", "delete-project-button");
     deleteProjectButton.textContent = "Delete project";
     deleteProjectButton.addEventListener("click", handleDeleteProject);
 
@@ -484,15 +488,38 @@ function handleNewProject(e) {
         renderProjectOptions();
     }
     newProjectButton.removeEventListener("click", handleNewProject);
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
         newProjectName.value = "";
         newProjectButton.addEventListener("click", handleNewProject);
-    }, 3000);
+    }, 1000);
 }
 
 
 function handleDeleteProject() {
+    const newProjectName = document.getElementById("new-project-name");
+    const newProjectButton = document.getElementById("new-project-button");
+    const deleteProjectButton = document.getElementById("delete-project-button");
+    const selectProject = document.getElementById("nav-projects-tab-select");
+    const selectedProject = selectProject.options[selectProject.selectedIndex];
 
+    if (selectedProject.hasAttribute("confirm-delete")) {
+        deleteProject(selectedProject.value);
+        newProjectName.value = "";
+        return
+    }
+
+    if (selectedProject.value === "none") return
+
+    selectedProject.setAttribute("confirm-delete", true);
+    newProjectName.value = "Click twice to delete selected project."
+    newProjectButton.removeEventListener("click", handleNewProject);
+    const timeout = setTimeout(() => {
+        newProjectName.value = "";
+        newProjectButton.addEventListener("click", handleNewProject);
+
+        if (selectedProject === undefined) return clearTimeout(timeout);
+        selectedProject.removeAttribute("confirm-delete")
+    }, 2000);
 }
 
 export {renderLayout, renderAllTodos, renderForm, renderProjectOptions}

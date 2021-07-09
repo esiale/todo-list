@@ -1,4 +1,4 @@
-import {renderAllTodos} from "../modules/dom";
+import {renderAllTodos, renderProjectOptions} from "../modules/dom";
 
 let todoStorage = [];
 let todoProjects = [];
@@ -71,6 +71,13 @@ function addProject(project) {
     }
 }
 
+function deleteProject(project) {
+    const index = todoProjects.indexOf(project)
+    todoProjects.splice(index, 1);
+    renderProjectOptions();
+    syncData("projects");
+}
 
-export {addTodo, deleteTodo, editTodo, todoStorage, todoProjects, syncData, setPriority, addProject}
+
+export {addTodo, deleteTodo, editTodo, todoStorage, todoProjects, syncData, setPriority, addProject, deleteProject}
 
