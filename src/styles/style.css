@@ -8,6 +8,7 @@
     --septenary: rgb(240, 240, 245);
     --dark-red: rgb(153, 0, 0);
     --red: rgb(204, 0, 0);
+    --pale-red: rgb(255, 230, 230)
 }
 
 * {
@@ -62,6 +63,10 @@ nav {
     color: var(--senary);
     font-size: 1.3rem;
     overflow: hidden;
+}
+
+.nav-active-tab {
+    background-color: var(--tertiary);
 }
 
 .nav-closed {
@@ -158,6 +163,10 @@ nav div {
     padding: 0 0.3rem;
     font-size: 0.9rem;
     font-weight: 600;
+}
+
+.todo-main-done p {
+    text-decoration: line-through;
 }
 
 .todo-secondary {

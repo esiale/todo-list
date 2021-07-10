@@ -1,9 +1,11 @@
 import "./styles/style.css"
-import {renderLayout, renderAllTodos, renderForm, renderProjectOptions} from "./modules/dom"
-import {syncData, addTodo} from "./modules/data"
+import {renderLayout} from "./modules/layout"
+import {syncData} from "./modules/data"
+import {renderAllTodos} from "./modules/todos"
+import {renderForm} from "./modules/form"
+import {renderProjectOptions} from "./modules/projects"
 
-syncData("todo");
-syncData("projects");
+syncData();
 renderLayout();
 renderForm();
 renderAllTodos();

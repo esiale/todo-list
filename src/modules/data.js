@@ -1,7 +1,12 @@
-import {renderAllTodos, renderProjectOptions} from "../modules/dom";
+import {renderAllTodos} from "./todos";
+import {renderProjectOptions} from "./projects"
+import isToday from 'date-fns/isToday'
+import isThisWeek from 'date-fns/isThisWeek'
+import parseISO from 'date-fns/parseISO'
+import compareAsc from 'date-fns/compareAsc'
 
 let todoStorage = [];
-let todoProjects = [];
+let projectsStorage = [];
 
 const Todo = function(title, desc, dueDate, project, priority) {
     this.title = title;
@@ -9,35 +14,37 @@ const Todo = function(title, desc, dueDate, project, priority) {
     this.dueDate = dueDate;
     this.project = project;
     this.priority = priority; 
-    this.isDone = false;
+    this.done = false;
 }
 
 function addTodo(title, desc, dueDate, project, priority) {
     const newEntry = new Todo(title, desc, dueDate, project, priority);
     todoStorage.push(newEntry);
+    syncTodos();
     renderAllTodos();
-    syncData("todo");
 }
 
-function syncData(data) {
-    if (data === "todo") {
-        if (!todoStorage.length && localStorage.getItem("todoLocal") === null) return
-
-        if (!Array.isArray(todoStorage) || !todoStorage.length) {
-            todoStorage = JSON.parse(window.localStorage.getItem("todoLocal"));
-        } else {
-            window.localStorage.setItem("todoLocal", JSON.stringify(todoStorage));
-        }
+function syncData() {
+    if (!Array.isArray(todoStorage) || !todoStorage.length) {
+        todoStorage = JSON.parse(window.localStorage.getItem("todoLocal"));
     }
-    if (data === "projects") {
-        if (!todoProjects.length && localStorage.getItem("projectsLocal") === null) return
-
-        if (!Array.isArray(todoProjects) || !todoProjects.length) {
-            todoProjects = JSON.parse(window.localStorage.getItem("projectsLocal"));
-        } else {
-            window.localStorage.setItem("projectsLocal", JSON.stringify(todoProjects));
-        }
+    
+    if (!Array.isArray(projectsStorage) || !projectsStorage.length) {
+        projectsStorage = JSON.parse(window.localStorage.getItem("projectsLocal"));
     }
+}
+
+function syncTodos() {
+    if (!todoStorage.length && localStorage.getItem("todoLocal") === null) return
+
+    window.localStorage.setItem("todoLocal", JSON.stringify(todoStorage));
+    console.log(todoStorage);
+}
+
+function syncProjects() {
+    if (!projectsStorage.length && localStorage.getItem("projectsLocal") === null) return
+
+    window.localStorage.setItem("projectsLocal", JSON.stringify(projectsStorage));
 }
 
 function setPriority(index) {
@@ -45,39 +52,92 @@ function setPriority(index) {
         todoStorage[index].priority = true;
     } else {
         todoStorage[index].priority = false;
-    } console.log(todoStorage[index].priority);
-    syncData("todo");
+    }
+    syncTodos();
+}
+
+function setDone(index) {
+    if (todoStorage[index].done === false) {
+        todoStorage[index].done = true;
+    } else {
+        todoStorage[index].done = false;
+    } 
 }
 
 function deleteTodo(index) {
     todoStorage.splice(index, 1);
     renderAllTodos();
-    syncData("todo");
+    syncTodos();
 }
 
 function editTodo(title, desc, dueDate, project, priority, index) {
     const editedTodo = new Todo(title, desc, dueDate, project, priority);
     todoStorage.splice(index, 1, editedTodo);
     renderAllTodos();
-    syncData("todo");
+    syncTodos();
 }
 
 function addProject(project) {
-    if (todoProjects.includes(project) || (!/\S/.test(project))) {
+    if (projectsStorage.includes(project) || (!/\S/.test(project))) {
         return "error"
     } else {
-        todoProjects.push(project);
-        syncData("projects");
+        projectsStorage.push(project);
+        syncProjects();
     }
 }
 
 function deleteProject(project) {
-    const index = todoProjects.indexOf(project)
-    todoProjects.splice(index, 1);
+    const index = projectsStorage.indexOf(project)
+    projectsStorage.splice(index, 1);
     renderProjectOptions();
-    syncData("projects");
+    syncProjects();
 }
 
+function sortTodos() {
+    const main = document.querySelector("main");
+    const display = main.dataset.display;
+    const project = main.dataset.project;
 
-export {addTodo, deleteTodo, editTodo, todoStorage, todoProjects, syncData, setPriority, addProject, deleteProject}
+    let sortedStorage = todoStorage;
+    function sortByProject() {
+        if (project !== "none") {
+            sortedStorage = sortedStorage.filter(item => item.project === project);
+        }
+    }
 
+    function sortByDisplay() {
+        switch (display) {
+            case "inbox":
+                break;
+            case "today":
+                sortedStorage = sortedStorage.filter(item => isToday(parseISO(item.dueDate)));
+                break;
+            case "week":
+                sortedStorage = sortedStorage.filter(item => isThisWeek(parseISO(item.dueDate)), { weekStartsOn: 1 });
+                break;
+        }  
+    }
+    
+    function sortByDate() {
+        sortedStorage.sort((a, b) => compareAsc(parseISO(a.dueDate), parseISO(b.dueDate)));
+    }
+
+    function sortByDone() {
+        sortedStorage = sortedStorage.sort((a, b) => (b.done === false) - (a.done === false));
+    }
+
+    function sortByPriority() {
+        sortedStorage.sort((a, b) => (b.priority === true) - (a.priority === true));
+    }
+
+    sortByProject();
+    sortByDisplay();
+    sortByDate();
+    sortByPriority();
+    sortByDone();
+
+    return sortedStorage
+}
+
+export {addTodo, deleteTodo, editTodo, sortTodos, todoStorage, projectsStorage, 
+syncData, setPriority, addProject, deleteProject, setDone}
