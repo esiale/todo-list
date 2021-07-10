@@ -1,4 +1,4 @@
-import {renderProjectsTab, showProjectsTab} from "./projects"
+import {renderProjectsTab, showProjectsTab, displayProjectStatus} from "./projects"
 import {showForm} from "./form"
 import {renderAllTodos} from "./todos"
 
@@ -11,8 +11,11 @@ function renderLayout() {
     const logo = document.createElement("div");
     logo.className = "logo";
     logo.textContent = "esiale TodoApp";
-    
-    header.append(logo);
+
+    const projectStatus = document.createElement("div");
+    projectStatus.className = "project-status";
+
+    header.append(logo, projectStatus);
 
     const main = document.createElement("main");
     main.dataset.display = "inbox";
@@ -23,6 +26,7 @@ function renderLayout() {
 
         const inbox = document.createElement("div");
         inbox.textContent = "Inbox";
+        inbox.classList.add("nav-active-tab");
         inbox.addEventListener("click", () => {
             main.dataset.display = "inbox";
             inbox.classList.add("nav-active-tab");
@@ -83,6 +87,7 @@ function renderLayout() {
     document.querySelector("#content").append(wrapper);
 
     renderProjectsTab();
+    displayProjectStatus();
 }
 
 function showNav() {

@@ -25,11 +25,15 @@ function addTodo(title, desc, dueDate, project, priority) {
 }
 
 function syncData() {
-    if (!Array.isArray(todoStorage) || !todoStorage.length) {
+    if (localStorage.getItem("todoLocal") === null) {
+        return
+    } else if (!Array.isArray(todoStorage) || !todoStorage.length) {
         todoStorage = JSON.parse(window.localStorage.getItem("todoLocal"));
     }
     
-    if (!Array.isArray(projectsStorage) || !projectsStorage.length) {
+    if (localStorage.getItem("projectsLocal") === null) {
+        return    
+    } else if (!Array.isArray(projectsStorage) || !projectsStorage.length) {
         projectsStorage = JSON.parse(window.localStorage.getItem("projectsLocal"));
     }
 }
@@ -38,7 +42,6 @@ function syncTodos() {
     if (!todoStorage.length && localStorage.getItem("todoLocal") === null) return
 
     window.localStorage.setItem("todoLocal", JSON.stringify(todoStorage));
-    console.log(todoStorage);
 }
 
 function syncProjects() {
@@ -94,6 +97,8 @@ function deleteProject(project) {
 }
 
 function sortTodos() {
+    if (todoStorage === null) return;
+
     const main = document.querySelector("main");
     const display = main.dataset.display;
     const project = main.dataset.project;

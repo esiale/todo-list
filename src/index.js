@@ -1,4 +1,5 @@
 import "./styles/style.css"
+import "./styles/media.css"
 import {renderLayout} from "./modules/layout"
 import {syncData} from "./modules/data"
 import {renderAllTodos} from "./modules/todos"

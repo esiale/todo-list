@@ -49,6 +49,7 @@ function renderTodo(title, desc, dueDate, index) {
     
     const editIcon = document.createElement("span");
     editIcon.className = "material-icons-outlined";
+    editIcon.setAttribute("id", "edit-todo-button")
     editIcon.textContent = "edit_note";
     editIcon.addEventListener("click", showEdit);
 
@@ -56,7 +57,7 @@ function renderTodo(title, desc, dueDate, index) {
     priorityIcon.className = "material-icons-outlined"
     priorityIcon.textContent = "priority_high";
     priorityIcon.addEventListener("click", activatePriority);
-    if (todoStorage[index].priority === true) {
+    if (todoStorage[index].priority === true && todoStorage[index].done === false) {
         priorityIcon.classList.add("priority-icon-activated");
         todoMain.style.backgroundColor = "var(--pale-red)";
     }
@@ -133,7 +134,7 @@ function confirmDelete(e) {
     thisDesc.classList.add("todo-confirm-delete");
     thisDesc.textContent = "Press again the delete button to confirm!";
     this.setAttribute("confirm-delete", true);
-    console.log(thisDesc)
+
     let deleteTimer = setTimeout(()  => {
     if (todoStorage[thisIndex] === undefined) return
     thisDesc.classList.remove("todo-confirm-delete");

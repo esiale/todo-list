@@ -10,6 +10,7 @@ function renderForm() {
     const form = document.createElement("form");
 
     const titleWrapper = document.createElement("div");
+    titleWrapper.className = "form-title-wrapper";
     const titleLabel = document.createElement("label");
     titleLabel.setAttribute("for", "todo-title");
     titleLabel.textContent = "Choose a new title:";
@@ -21,6 +22,7 @@ function renderForm() {
     titleInput.setAttribute("autocomplete", "off");
 
     const descWrapper = document.createElement("div");
+    descWrapper.className = "form-desc-wrapper";
     const descLabel = document.createElement("label");
     descLabel.setAttribute("for", "todo-desc");
     descLabel.textContent = "Write a description for your new Todo:";
@@ -32,6 +34,7 @@ function renderForm() {
     descInput.setAttribute("autocomplete", "off");
 
     const dateWrapper = document.createElement("div");
+    dateWrapper.className = "form-date-wrapper";
     const dateLabel = document.createElement("label");
     dateLabel.setAttribute("for", "todo-date");
     dateLabel.textContent = "When is this Todo due?";
@@ -45,6 +48,7 @@ function renderForm() {
     dateInput.setAttribute("placeholder", "dd/mm/yyyy");
 
     const projectWrapper = document.createElement("div");
+    projectWrapper.className = "form-project-wrapper";
     const projectLabel = document.createElement("label");
     projectLabel.setAttribute("for", "todo-project");
     projectLabel.textContent = "Assign your Todo to a project:";
@@ -151,6 +155,7 @@ function showForm(action, caller) {
     const submitButton = document.getElementById("submit-button");
     const addButton = document.querySelector(".add-button");
     const nav = document.querySelector("nav");
+    const editTodoButton = document.getElementById("edit-todo-button");
 
     if (formWrapper.classList.contains("form-wrapper-open") && this === addButton && submitButton.value === "Edit") return
     if (nav.classList.contains("nav-open")) {

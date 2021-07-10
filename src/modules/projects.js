@@ -47,6 +47,7 @@ function showProjectsTab() {
 
 function renderProjectOptions() {
     const allSelects = document.querySelectorAll("select");
+
     allSelects.forEach(item => {
         const allOptions = item.querySelectorAll("option");
         for (let i = 0; i < allOptions.length; i++) {
@@ -58,6 +59,9 @@ function renderProjectOptions() {
         noProject.setAttribute("selected", "");
         noProject.textContent = "No project selected";    
         item.append(noProject);
+
+        if (projectsStorage === null) return
+
         projectsStorage.forEach(project => {
             const newOption = document.createElement("option");
             newOption.setAttribute("value", project);
@@ -68,6 +72,7 @@ function renderProjectOptions() {
             item.addEventListener("change", function() {
                 main.dataset.project = this.value;
                 renderAllTodos();
+                displayProjectStatus();
             })
         }
         })
@@ -105,6 +110,7 @@ function handleDeleteProject() {
         const main = document.querySelector("main");
         main.dataset.project = "none";
         renderAllTodos();
+        displayProjectStatus();
         return
     }
 
@@ -122,4 +128,16 @@ function handleDeleteProject() {
     }, 2000);
 }
 
-export {renderProjectOptions, renderProjectsTab, showProjectsTab}
+function displayProjectStatus() {
+    const headerStatus = document.querySelector(".project-status");
+    const main = document.querySelector("main");
+    const mainDisplay = main.dataset.project;
+
+    if (mainDisplay === "none") {
+        headerStatus.textContent = "You're currently viewing no projects."
+    } else {
+        headerStatus.textContent = `You're viewing: ${main.dataset.project} project.`;
+    }
+}
+
+export {renderProjectOptions, renderProjectsTab, showProjectsTab, displayProjectStatus}
