@@ -14,49 +14,8 @@
     }
 }
 
-@media screen and (orientation:landscape)
-and (max-device-width: 991px) 
-and (max-device-height: 420px) {
-
-    form {
-        display: grid;
-        grid-template-columns: 60% 40%;
-        grid-template-rows: repeat(3 1fr);
-        grid-template-areas: 
-            "form-title form-date"
-            "form-desc form-priority"
-            "form-project form-buttons";
-    }
-
-    .form-title-wrapper {
-        grid-area: form-title;
-    }
-
-    .form-desc-wrapper {
-        grid-area: form-desc;
-    }
-
-    .form-date-wrapper {
-        grid-area: form-date;
-    }
-
-    .form-project-wrapper {
-        grid-area: form-project;
-    }
-
-    .form-priority-wrapper {
-        grid-area: form-priority;
-    }
-
-    .form-buttons {
-        grid-area: form-buttons;
-        align-self: end;
-    }
-}
-
-@media (max-width: 992px) 
+@media (max-height: 739px) 
 and (min-width: 600px) {
-
     form {
         display: grid;
         grid-template-columns: 60% 40%;
@@ -93,7 +52,8 @@ and (min-width: 600px) {
     }
 }
 
-@media (min-width: 992px) {
+@media (min-width: 992px) 
+and (min-height: 740px) {
     .wrapper {
         display: grid;
         background-color: var(--light-grey);
@@ -148,7 +108,8 @@ and (min-width: 600px) {
     }
 }
 
-@media (min-width: 1200px) {
+@media (min-width: 1200px)
+and (min-height: 760px) {
 
     .wrapper {
         display: grid;
@@ -163,7 +124,8 @@ and (min-width: 600px) {
     }
 }
 
-@media (min-width: 1600px) {
+@media (min-width: 1600px) 
+and (min-height: 760px){
 
     .wrapper {
         display: grid;
