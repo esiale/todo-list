@@ -57,6 +57,7 @@ main {
     background-color: var(--primary);
     flex: 1;
     overflow: auto;
+    flex-grow: 1;
 }
 
 span {
